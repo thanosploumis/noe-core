@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue
 abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
 
   @Test
-  void updateExistingHttpConnectorAllAttribtuesGivenSuccessExpected() {
+  void updateExistingHttpConnectorAllAttributesGivenSuccessExpected() {
     def onlyOneNonSecureConnector = 1
     Integer testHttpPort = 18080
     def testAddress = "my-test-host"
@@ -108,9 +108,6 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
     assertEquals testSSLCertificateKeyFile, Server.Service.Connector.find { isSecure(it) }.@SSLCertificateKeyFile.toString()
     assertEquals testSSLPassword, Server.Service.Connector.find { isSecure(it) }.@SSLPassword.toString()
     assertEquals testScheme, Server.Service.Connector.find { isSecure(it) }.@scheme.toString()
-
-    assertEquals testHttpsPort, Integer.valueOf(Server.Service.Connector.find { isNotSecuredHttpProtocol(it) }.@redirectPort.toString())
-    assertEquals testHttpsPort, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString())
   }
 
   @Test
@@ -143,6 +140,33 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
   }
 
   @Test
+  void createNewAjpConnectorSuccessExpected() {
+    Integer testAjpPort = 18585
+    String testProtocol = "AJP/1.3"
+    Integer testRedirectPort = 18989
+    Boolean testSecretRequired = true
+    String testSecret = "mysecret"
+    String testAllowedRequestAttributesPattern = "customAttributesPattern"
+
+    new TomcatConfigurator(tomcat)
+      .ajpConnector(new AjpConnectorTomcat()
+        .setPort(testAjpPort)
+        .setProtocol(testProtocol)
+        .setRedirectPort(testRedirectPort)
+        .setSecretRequired(testRedirectPort)
+        .setSecret(testSecret)
+        .setAllowedRequestAttributesPattern(testAllowedRequestAttributesPattern))
+
+    GPathResult Server = new XmlSlurper().parse(new File(tomcat.basedir, "conf/server.xml"))
+    assertEquals testAjpPort, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@port.toString())
+    assertEquals testProtocol, Server.Service.Connector.find { isAjpProtocol(it) }.@protocol.toString()
+    assertEquals testRedirectPort, Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString()
+    assertEquals testSecretRequired, Boolean.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@secretRequired.toString())
+    assertEquals testSecret, Server.Service.Connector.find { isAjpProtocol(it) }.@secret.toString()
+    assertEquals testAllowedRequestAttributesPattern, Server.Service.Connector.find { isAjpProtocol(it) }.@allowedRequestAttributesPattern.toString()
+  }
+
+  @Test
   void updateExistingAjpConnectorOneAttribtueGivenSuccessExpected() {
     def onlyOneAjpConnector = 1
     Integer testAjpPort = 18009
@@ -156,6 +180,33 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
     assertEquals testAjpPort, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@port.toString())
     assertEquals Tomcat.DEFAULT_HTTPS_PORT, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString())
     assertEquals defAttributesCountOfAjpConnector, Server.Service.Connector.find { isAjpProtocol(it) }.attributes().size()
+  }
+
+  @Test
+  void createNewHttpConnectorSuccessExpected() {
+    Integer testAjpPort = 18585
+    String testProtocol = "AJP/1.3"
+    Integer testRedirectPort = 18989
+    Boolean testSecretRequired = true
+    String testSecret = "mysecret"
+    String testAllowedRequestAttributesPattern = "customAttributesPattern"
+
+    new TomcatConfigurator(tomcat)
+      .ajpConnector(new AjpConnectorTomcat()
+        .setPort(testAjpPort)
+        .setProtocol(testProtocol)
+        .setRedirectPort(testRedirectPort)
+        .setSecretRequired(testRedirectPort)
+        .setSecret(testSecret)
+        .setAllowedRequestAttributesPattern(testAllowedRequestAttributesPattern))
+
+    GPathResult Server = new XmlSlurper().parse(new File(tomcat.basedir, "conf/server.xml"))
+    assertEquals testAjpPort, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@port.toString())
+    assertEquals testProtocol, Server.Service.Connector.find { isAjpProtocol(it) }.@protocol.toString()
+    assertEquals testRedirectPort, Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString()
+    assertEquals testSecretRequired, Boolean.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@secretRequired.toString())
+    assertEquals testSecret, Server.Service.Connector.find { isAjpProtocol(it) }.@secret.toString()
+    assertEquals testAllowedRequestAttributesPattern, Server.Service.Connector.find { isAjpProtocol(it) }.@allowedRequestAttributesPattern.toString()
   }
 
   @Test
@@ -219,18 +270,16 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
     int testOffset = 10000
     Integer testHttpsPort = 18443
 
-    new TomcatConfigurator(tomcat)
+    TomcatConfigurator tconf = new TomcatConfigurator(tomcat)
       .httpsConnector(new SecureHttpConnectorTomcat().setPort(testHttpsPort))
       .portOffset(testOffset)
 
     GPathResult Server = new XmlSlurper().parse(new File(tomcat.basedir, "conf/server.xml"))
-    assertEquals testHttpsPort + testOffset, Integer.valueOf(Server.Service.Connector.find { isNotSecuredHttpProtocol(it) }.@redirectPort.toString())
-    assertEquals testHttpsPort + testOffset, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString())
     assertEquals testHttpsPort + testOffset, Integer.valueOf(Server.Service.Connector.find { isSecure(it) }.@port.toString())
   }
 
   @Test
-  void shiftPortAndSetHttpsPortDefaltServerXmlChangeExpected() {
+  void shiftPortAndSetHttpsPortDefaultServerXmlChangeExpected() {
     int testOffset = 10000
     Integer testHttpsPort = 18443
 
@@ -239,8 +288,6 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
       .httpsConnector(new SecureHttpConnectorTomcat().setPort(testHttpsPort))
 
     GPathResult Server = new XmlSlurper().parse(new File(tomcat.basedir, "conf/server.xml"))
-    assertEquals testHttpsPort, Integer.valueOf(Server.Service.Connector.find { isNotSecuredHttpProtocol(it) }.@redirectPort.toString())
-    assertEquals testHttpsPort, Integer.valueOf(Server.Service.Connector.find { isAjpProtocol(it) }.@redirectPort.toString())
     assertEquals testHttpsPort, Integer.valueOf(Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@port.toString())
     assertEquals Tomcat.DEFAULT_HTTP_PORT + testOffset, Integer.valueOf(Server.Service.Connector.find { isNotSecuredHttpProtocol(it) }.@port.toString())
   }
