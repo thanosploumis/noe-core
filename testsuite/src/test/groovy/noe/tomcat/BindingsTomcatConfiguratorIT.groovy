@@ -153,7 +153,7 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
         .setPort(testAjpPort)
         .setProtocol(testProtocol)
         .setRedirectPort(testRedirectPort)
-        .setSecretRequired(testRedirectPort)
+        .setSecretRequired(testSecretRequired)
         .setSecret(testSecret)
         .setAllowedRequestAttributesPattern(testAllowedRequestAttributesPattern))
 
