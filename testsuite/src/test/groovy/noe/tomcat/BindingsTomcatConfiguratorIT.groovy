@@ -438,10 +438,10 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
     String keyAlias = "keyalias"
     String keyFile = "keyfile"
     String keyPass = "keypass"
-    String keystoreFile = "tprovider"
-    String keystorePass = "protocols"
-    String keystoreType = "sslprotocol"
-    String keystoreProvider = "several_ciphers"
+    String keystoreFile = "keystoreFile"
+    String keystorePass = "keystorePass"
+    String keystoreType = "keystoreType"
+    String keystoreProvider = "keystoreProvider"
     String certType = "certType"
 
     ConnectorCertificateTomcat certificateObj = new ConnectorCertificateTomcat()
@@ -474,8 +474,8 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
     assertEquals keyPass, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeyPassword.toString()
     assertEquals keystoreFile, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystoreFile.toString()
     assertEquals keystorePass, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystorePassword.toString()
-    assertEquals keystoreType, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystoreProvider.toString()
-    assertEquals keystoreProvider, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystoreType.toString()
+    assertEquals keystoreProvider, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystoreProvider.toString()
+    assertEquals keystoreType, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateKeystoreType.toString()
     assertEquals certType, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.SSLHostConfig.Certificate.@certificateType.toString()
   }
 
