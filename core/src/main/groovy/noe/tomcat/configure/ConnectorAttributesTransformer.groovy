@@ -178,20 +178,75 @@ class ConnectorAttributesTransformer {
       }
 
       if (connector.getSSLHostConfig() != null) {
-        Map<String, Object> sslHostConfig = connector.getSSLHostConfig().properties
-        Object certificateObj = sslHostConfig.get("certificateConfig")
+        Map<String, Object> sslHostConfigAttributes = [:]
+        ConnectorSSLHostConfigTomcat sslHostConfig = connector.getSSLHostConfig()
 
-        sslHostConfig.remove("certificateConfig")
-        sslHostConfig.entrySet().removeIf({ e -> (e.value == null || e.value instanceof Class) })
+        if (sslHostConfig.getCaCertificateFile() != null && !sslHostConfig.getCaCertificateFile().isEmpty()) {
+          sslHostConfigAttributes.put('caCertificateFile', sslHostConfig.getCaCertificateFile())
+        }
+        if (sslHostConfig.getCaCertificatePath() != null && !sslHostConfig.getCaCertificatePath().isEmpty()) {
+          sslHostConfigAttributes.put('caCertificatePath', sslHostConfig.getCaCertificatePath())
+        }
+        if (sslHostConfig.getCiphers() != null && !sslHostConfig.getCiphers().isEmpty()) {
+          sslHostConfigAttributes.put('ciphers', sslHostConfig.getCiphers())
+        }
+        if (sslHostConfig.getSslProtocol() != null && !sslHostConfig.getSslProtocol().isEmpty()) {
+          sslHostConfigAttributes.put('sslProtocol', sslHostConfig.getSslProtocol())
+        }
+        if (sslHostConfig.getProtocols() != null && !sslHostConfig.getProtocols().isEmpty()) {
+          sslHostConfigAttributes.put('protocols', sslHostConfig.getProtocols())
+        }
+        if (sslHostConfig.getTruststoreFile() != null && !sslHostConfig.getTruststoreFile().isEmpty()) {
+          sslHostConfigAttributes.put('truststoreFile', sslHostConfig.getTruststoreFile())
+        }
+        if (sslHostConfig.getTruststorePassword() != null && !sslHostConfig.getTruststorePassword().isEmpty()) {
+          sslHostConfigAttributes.put('truststorePassword', sslHostConfig.getTruststorePassword())
+        }
+        if (sslHostConfig.getTruststoreProvider() != null && !sslHostConfig.getTruststoreProvider().isEmpty()) {
+          sslHostConfigAttributes.put('truststoreProvider', sslHostConfig.getTruststoreProvider())
+        }
+        if (sslHostConfig.getTruststoreType() != null && !sslHostConfig.getTruststoreType().isEmpty()) {
+          sslHostConfigAttributes.put('truststoreType', sslHostConfig.getTruststoreType())
+        }
 
-        if (certificateObj != null ) {
-          Map<String, String> certificateElement = certificateObj.properties
+        Node sslHostConfigNode = node.appendNode("SSLHostConfig", sslHostConfigAttributes)
 
-          certificateElement.entrySet().removeIf({ e -> (e.value == null || e.value instanceof Class) })
+        if (sslHostConfig.getCertificate() != null ) {
+          Map<String, Object> certificateAttributes = [:]
+          ConnectorCertificateTomcat certificate = sslHostConfig.getCertificate()
 
-          node.appendNode("SSLHostConfig", sslHostConfig).appendNode("Certificate", certificateElement)
-        } else {
-          node.appendNode("SSLHostConfig", sslHostConfig)
+          if (certificate.getCertificateFile() != null && !certificate.getCertificateFile().isEmpty()) {
+            certificateAttributes.put('certificateFile', certificate.getCertificateFile())
+          }
+          if (certificate.getCertificateChainFile() != null && !certificate.getCertificateChainFile().isEmpty()) {
+            certificateAttributes.put('certificateChainFile', certificate.getCertificateChainFile())
+          }
+          if (certificate.getCertificateKeyAlias() != null && !certificate.getCertificateKeyAlias().isEmpty()) {
+            certificateAttributes.put('certificateKeyAlias', certificate.getCertificateKeyAlias())
+          }
+          if (certificate.getCertificateKeyFile() != null && !certificate.getCertificateKeyFile().isEmpty()) {
+            certificateAttributes.put('certificateKeyFile', certificate.getCertificateKeyFile())
+          }
+          if (certificate.getCertificateKeyPassword() != null && !certificate.getCertificateKeyPassword().isEmpty()) {
+            certificateAttributes.put('certificateKeyPassword', certificate.getCertificateKeyPassword())
+          }
+          if (certificate.getCertificateKeystoreFile() != null && !certificate.getCertificateKeystoreFile().isEmpty()) {
+            certificateAttributes.put('certificateKeystoreFile', certificate.getCertificateKeystoreFile())
+          }
+          if (certificate.getCertificateKeystorePassword() != null && !certificate.getCertificateKeystorePassword().isEmpty()) {
+            certificateAttributes.put('certificateKeystorePassword', certificate.getCertificateKeystorePassword())
+          }
+          if (certificate.getCertificateKeystoreProvider() != null && !certificate.getCertificateKeystoreProvider().isEmpty()) {
+            certificateAttributes.put('certificateKeystoreProvider', certificate.getCertificateKeystoreProvider())
+          }
+          if (certificate.getCertificateKeystoreType() != null && !certificate.getCertificateKeystoreType().isEmpty()) {
+            certificateAttributes.put('certificateKeystoreType', certificate.getCertificateKeystoreType())
+          }
+          if (certificate.getCertificateType() != null && !certificate.getCertificateType().isEmpty()) {
+            certificateAttributes.put('certificateType', certificate.getCertificateType())
+          }
+
+          sslHostConfigNode.appendNode("Certificate", certificateAttributes)
         }
       }
 
