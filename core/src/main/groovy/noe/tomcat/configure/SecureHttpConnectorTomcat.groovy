@@ -65,10 +65,13 @@ public class SecureHttpConnectorTomcat extends ConnectorTomcatAbstract<SecureHtt
    *  Password for keystore, trustore and SSL sets to "changeit" (without apostrophes).
    */
   SecureHttpConnectorTomcat setDefaultCertificatesConfiguration() {
-    String sslStringDir = PathHelper.join(new Platform().getTmpDir(), "ssl", "proper", "generated", "ca", "intermediate").getCanonicalPath()
-    String sslCertificate = new File(sslStringDir, "localhost.server.cert.pem").getCanonicalPath()
-    String sslCertificateKey = new File(sslStringDir, "localhost.server.key.pem").getCanonicalPath()
-    String keystoreFilePath = new File(sslStringDir, "localhost.server.keystore.jks").getCanonicalPath()
+    String sslStringDir = PathHelper.join(new Platform().getTmpDir(), "ssl", "proper", "generated", "ca", "intermediate")
+    String sslCertsDir = PathHelper.join(sslStringDir, "certs")
+    String sslPrivateDir = PathHelper.join(sslStringDir, "private")
+    String sslKeystoresDir = PathHelper.join(sslStringDir, "keystores")
+    String sslCertificate = new File(sslCertsDir, "localhost.server.cert.pem").getCanonicalPath()
+    String sslCertificateKey = new File(sslPrivateDir, "localhost.server.key.pem").getCanonicalPath()
+    String keystoreFilePath = new File(sslKeystoresDir, "localhost.server.keystore.jks").getCanonicalPath()
     String password = "testpass"
 
     setSslCertificateFile(sslCertificate)

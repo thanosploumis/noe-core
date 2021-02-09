@@ -297,10 +297,13 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
 
   @Test
   void testCertificateDefaultsServerXmlChangeExpected() {
-    String sslIntermediate = PathHelper.join(new Platform().getTmpDir(), "ssl", "proper", "generated", "ca", "intermediate")
-    String sslCertificate = new File(PathHelper.join(sslIntermediate, "certs"), "localhost.server.cert.pem").getCanonicalPath()
-    String sslPrivateKey = new File(PathHelper.join(sslIntermediate, "private"), "localhost.server.key.pem").getCanonicalPath()
-    String sslKeystorePath = new File(PathHelper.join(sslIntermediate, "keystores"), "localhost.server.keystore.jks").getCanonicalPath()
+    String sslStringDir = PathHelper.join(new Platform().getTmpDir(), "ssl", "proper", "generated", "ca", "intermediate")
+    String sslCertsDir = PathHelper.join(sslStringDir, "certs")
+    String sslPrivateDir = PathHelper.join(sslStringDir, "private")
+    String sslKeystoresDir = PathHelper.join(sslStringDir, "keystores")
+    String sslCertificate = new File(sslCertsDir, "localhost.server.cert.pem").getCanonicalPath()
+    String sslCertificateKey = new File(sslPrivateDir, "localhost.server.key.pem").getCanonicalPath()
+    String keystoreFilePath = new File(sslKeystoresDir, "localhost.server.keystore.jks").getCanonicalPath()
     String password = "testpass"
     Integer testHttpsPort = 8443
 
@@ -311,8 +314,8 @@ abstract class BindingsTomcatConfiguratorIT extends TomcatTestAbstract {
 
     GPathResult Server = new XmlSlurper().parse(new File(tomcat.basedir, "conf/server.xml"))
     assertEquals sslCertificate, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@SSLCertificateFile.toString()
-    assertEquals sslPrivateKey, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@SSLCertificateKeyFile.toString()
-    assertEquals sslKeystorePath, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@keystoreFile.toString()
+    assertEquals sslCertificateKey, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@SSLCertificateKeyFile.toString()
+    assertEquals keystoreFilePath, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@keystoreFile.toString()
     assertEquals password, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@SSLPassword.toString()
     assertEquals password, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@truststorePass.toString()
     assertEquals password, Server.Service.Connector.find { isSecuredHttpProtocol(it) }.@keystorePass.toString()
