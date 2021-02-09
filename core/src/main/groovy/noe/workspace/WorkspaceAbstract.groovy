@@ -120,23 +120,34 @@ abstract class WorkspaceAbstract implements IWorkspace {
   }
 
   /**
-   * Copies intermediate, pre-generated certificates from noe core to ${tmpdir}/ssl/proper/generated/ca/intermediate directory.
+   * Copies self-signed, pre-generated certificates from noe core to ${tmpdir}/ssl/self_signed directory.
    *
    */
   void copyCertificates() {
+//    List<String> certificates = ["server.crt", "server.jks", "server.key", "server.p12"]
+//    String sslStringDir = PathHelper.join(platform.tmpDir, "ssl", "self_signed")
     String sslIntermediateDir = PathHelper.join(platform.tmpDir, "ssl", "proper", "generated", "ca", "intermediate")
-    File sslDir = new File(sslIntermediateDir)
+    File intermediateTmpDir = new File(sslIntermediateDir)
+//    File sslDir = new File(sslStringDir)
+//    String resourcesPath = "ssl/self_signed/"  //resources jar path is always separated by /
+    String intermediatePath = "ssl/proper/generated/ca/intermediate/"
+//    if (!sslDir.exists()) {
+//      JBFile.mkdir(sslDir)
+//    }
 
-    if (!sslDir.exists()) {
-      JBFile.mkdir(sslDir)
+    if (!intermediateDir.exists()) {
+      JBFile.mkdir(intermediateTmpDir)
     }
 
-    JBFile.makeAccessible(sslDir)
+//    JBFile.makeAccessible(sslDir)
+    JBFile.makeAccessible(intermediateTmpDir)
 
-    for (int i = 0; i < 3; i++) {
-      File sslIntermediateFile = Library.retrieveResourceAsFile("${sslIntermediateDir}")
-      JBFile.move(sslIntermediateFile, sslDir)
-    }
+//    for (String certName : certificates) {
+//      File certFile = Library.retrieveResourceAsFile("${resourcesPath}${certName}")
+//      JBFile.move(certFile, sslDir)
+//    }
+    File sslIntermediateFile = Library.retrieveResourceAsFile("${intermediatePath}")
+    JBFile.move(sslIntermediateFile, intermediateTmpDir)
   }
 
   void downloadClusterBench() {

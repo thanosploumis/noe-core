@@ -12,6 +12,7 @@ import noe.tomcat.configure.ShutdownTomcat
 import org.junit.Test
 
 import noe.common.utils.Platform
+import noe.common.utils.PathHelper
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
