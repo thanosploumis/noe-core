@@ -120,44 +120,22 @@ abstract class WorkspaceAbstract implements IWorkspace {
   }
 
   /**
-   * Copies self-signed, pre-generated certificates from noe core to ${tmpdir}/ssl/self_signed directory.
+   * Copies intermediate, pre-generated certificates from noe core to ${tmpdir}/ssl/proper/generated/ca/intermediate directory.
    *
    */
-
   void copyCertificates() {
-    List<String> certificates = ["localhost.server.cert.pem", "localhost.server.key.pem", "localhost.server.keystore.jks"]
-    List<String> certificatesPaths = ["ssl/proper/generated/ca/intermediate/certs/", "ssl/proper/generated/ca/intermediate/private/", "ssl/proper/generated/ca/intermediate/keystores/"]
-    String sslStringDir1 = PathHelper.join(platform.tmpDir, "ssl", "proper", "generated", "ca", "intermediate")
-    String sslStringDir2 = PathHelper.join(platform.tmpDir, "ssl", "proper", "generated", "ca", "intermediate")
-    String sslStringDir3 = PathHelper.join(platform.tmpDir, "ssl", "proper", "generated", "ca", "intermediate")
-    File sslDir1 = new File(sslStringDir1)
-    File sslDir2 = new File(sslStringDir2)
-    File sslDir3 = new File(sslStringDir3)
+    String sslIntermediateDir = PathHelper.join(platform.tmpDir, "ssl", "proper", "generated", "ca", "intermediate")
+    File sslDir = new File(sslIntermediateDir)
 
-
-    if (!sslDir1.exists()) {
-      JBFile.mkdir(sslDir1)
+    if (!sslDir.exists()) {
+      JBFile.mkdir(sslDir)
     }
 
-    if (!sslDir2.exists()) {
-      JBFile.mkdir(sslDir2)
-    }
-
-    if (!sslDir3.exists()) {
-      JBFile.mkdir(sslDir3)
-    }
-
-    JBFile.makeAccessible(sslDir1)
-    JBFile.makeAccessible(sslDir2)
-    JBFile.makeAccessible(sslDir3)
+    JBFile.makeAccessible(sslDir)
 
     for (int i = 0; i < 3; i++) {
-      File certFile = Library.retrieveResourceAsFile("${certificatesPaths[i]}${certificates[i]}")
-      JBFile.move(certFile, sslDir1)
-      certFile = Library.retrieveResourceAsFile("${certificatesPaths[i]}${certificates[i]}")
-      JBFile.move(certFile, sslDir2)
-      certFile = Library.retrieveResourceAsFile("${certificatesPaths[i]}${certificates[i]}")
-      JBFile.move(certFile, sslDir3)
+      File sslIntermediateFile = Library.retrieveResourceAsFile("${sslIntermediateDir}")
+      JBFile.move(sslIntermediateFile, sslDir)
     }
   }
 
